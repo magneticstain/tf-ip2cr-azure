@@ -85,7 +85,7 @@ subscription_id = "<AZURE_SUBSCRIPTION_ID>"
 Example:
 
 ```hcl
-subscription_id = "ip-2-cloudresource"
+subscription_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 ```
 
 ### Plan and Apply Plans
