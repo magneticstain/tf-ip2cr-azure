@@ -1,0 +1,29 @@
+name: Validate and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'  # run a test every Sunday at 00:00 to catch random gremlins
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: terraform-validate
+        uses: dflook/terraform-validate@v1.29.1
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3.0.0
+      - name: Init TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Run TFLint
+        run: tflint -f compact
+      
+    
