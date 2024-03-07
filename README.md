@@ -6,6 +6,10 @@ Terraform plans for generating ephemeral test resources for testing ip2cr in GCP
 
 Currently, this set of terraform plans:
 
+1. Creates a Virtual Machine with a public IP address
+1. Starts a new Load Balancer that fronts the created VM
+1. Generates a Front Door CDN profile with the VM as the origin
+
 This should provide several vectors for testing IP2CR.
 
 ## Usage
