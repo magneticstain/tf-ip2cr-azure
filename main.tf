@@ -24,6 +24,7 @@ module "ip2cr-test-suite" {
 
 output "ip2cr-testing-metadata" {
   value = [
-    module.ip2cr-test-suite.ip2cr-vm-metadata
+    module.ip2cr-test-suite.ip2cr-vm-metadata,
+    module.ip2cr-test-suite.ip2cr-lb-metadata
   ]
 }
