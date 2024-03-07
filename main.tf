@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0.2"
+      version = "~> 3"
     }
   }
 
@@ -25,6 +25,7 @@ module "ip2cr-test-suite" {
 output "ip2cr-testing-metadata" {
   value = [
     module.ip2cr-test-suite.ip2cr-vm-metadata,
-    module.ip2cr-test-suite.ip2cr-lb-metadata
+    module.ip2cr-test-suite.ip2cr-lb-metadata,
+    module.ip2cr-test-suite.ip2cr-cdn-metadata
   ]
 }

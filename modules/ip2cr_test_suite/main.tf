@@ -175,3 +175,54 @@ output "ip2cr-lb-metadata" {
     azurerm_public_ip.ip2cr-public-ip-lb.ip_address
   ]
 }
+
+## CDN
+resource "azurerm_cdn_frontdoor_profile" "ip2cr-cdn-frontdoor-profile" {
+  name                = "ip2cr-cdn-frontdoor-profile"
+  resource_group_name = azurerm_resource_group.ip-2-cloudresource.name
+  sku_name            = "Standard_AzureFrontDoor"
+}
+
+resource "azurerm_cdn_frontdoor_endpoint" "ip2cr-cdn-endpoint" {
+  name                     = "ip2cr-cdn-endpoint"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.ip2cr-cdn-frontdoor-profile.id
+}
+
+resource "azurerm_cdn_frontdoor_origin_group" "ip2cr-cdn-origin-grp" {
+  name                     = "ip2cr-cdn-origin-grp"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.ip2cr-cdn-frontdoor-profile.id
+
+  load_balancing {}
+}
+
+resource "azurerm_cdn_frontdoor_origin" "ip2cr-cdn-origin" {
+  name                          = "ip2cr-cdn-origin"
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.ip2cr-cdn-origin-grp.id
+  host_name                      = azurerm_linux_virtual_machine.ip2cr-vm.public_ip_address
+  certificate_name_check_enabled = true
+  enabled                        = true
+}
+
+resource "azurerm_cdn_frontdoor_route" "ip2cr-cdn-route" {
+  name                          = "ip2cr-cdn-route"
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.ip2cr-cdn-endpoint.id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.ip2cr-cdn-origin-grp.id
+  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.ip2cr-cdn-origin.id]
+
+  patterns_to_match      = ["/*"]
+  supported_protocols    = ["Http", "Https"]
+  forwarding_protocol    = "HttpsOnly"
+
+  depends_on = [
+    azurerm_cdn_frontdoor_endpoint.ip2cr-cdn-endpoint,
+    azurerm_cdn_frontdoor_origin.ip2cr-cdn-origin,
+    azurerm_cdn_frontdoor_origin_group.ip2cr-cdn-origin-grp
+    ]
+}
+
+output "ip2cr-cdn-metadata" {
+  value = [
+    azurerm_cdn_frontdoor_endpoint.ip2cr-cdn-endpoint.id,
+    azurerm_cdn_frontdoor_endpoint.ip2cr-cdn-endpoint.host_name
+  ]
+}
